@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private float movementX;
     private float movementY;
+    private Spawner spawner; // Referencia al script Spawner
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
         // esto settea el valor de la variable "rb" a el valor del componente de 
         // Rigidbody que esta adjunto a la pelota (GameObject player)
         rb = GetComponent<Rigidbody>();
+        spawner = FindObjectOfType<Spawner>(); // Encuentra el objeto Spawner en la escena
     }
 
     // el PlayerInput va a estar enviando informacion
@@ -48,6 +50,27 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = new Vector3(movementX, 0.0f, movementY );
 
         rb.AddForce(movement * speed);
+        
 
+    }
+
+    //trigger = desencadenar/disparador // behavior = comportamiento
+    // para hacer que las monedas desaparezcan con la colision de la bola
+    // para lograr esto necesito que se detecte la colision del GameObject Player con el del GameObject Pickup
+    // cd detecte esta colision, tengo que desencadernar un comportamiento
+    // la funcion OnTriggerEnter va a detectar la colision entre esos 2 obj
+    // la funcion va a ser llamada por Unity cada vez que el Player GameObject toca por primera vez un "colisionador de disparador"
+    // y esto le va a dar una referencia al "colisionador de disparador" de que ha sido tocado. Este "colisionador de disparador" se llama
+    // "other". esta es un ref de los objetos "Collider" que fueron tocados
+    private void OnTriggerEnter(Collider other) {
+        // el if es para comprobar que el GameObject tocado (identificado por "other") es el que queremos desactivar 
+        if(other.gameObject.CompareTag("PickUp")) {
+            other.gameObject.SetActive(false);
+        }
+
+        if(other.gameObject.CompareTag("Enemy")) {
+            // Invoca la función SpawnEnemy del script Spawner
+            spawner.SpawnEnemy();
+        }
     }
 }
